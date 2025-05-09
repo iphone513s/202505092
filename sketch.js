@@ -62,6 +62,12 @@ function draw() {
   background(220);
   image(video, 0, 0);
 
+  // 先畫圓，確保在最上層
+  fill(0, 255, 0, 180); // 半透明綠色
+  stroke(0);            // 黑色邊框
+  strokeWeight(4);
+  ellipse(circleCenter[0], circleCenter[1], circleRadius * 2);
+
   // hands 需由手部偵測模型取得
   if (typeof hands !== 'undefined') {
     let fingerPoints = [];
@@ -86,8 +92,4 @@ function draw() {
       }
     }
   }
-
-  // 畫圓
-  fill(0, 255, 0);
-  ellipse(circleCenter[0], circleCenter[1], circleRadius * 2);
 }
