@@ -27,23 +27,26 @@ function setup() {
   handPose.detectStart(video, gotHands);
 }
 
-// 假設 hand.keypoints 是一個包含 21 個點的陣列，每個點有 x, y 屬性
-// hands 是一個陣列，包含左右手 hand 物件
+// 假設 hands 是一個陣列，包含左右手的 hand 物件
+// hand.keypoints 是一個長度為 21 的陣列，每個元素有 x, y 屬性
 
 function drawHandLines(hand) {
-  const groups = [
-    [0, 1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 10, 11, 12],
-    [13, 14, 15, 16],
-    [17, 18, 19, 20]
+  // 每根手指的 keypoints 編號
+  const fingerGroups = [
+    [0, 1, 2, 3, 4],      // 大拇指
+    [5, 6, 7, 8],         // 食指
+    [9, 10, 11, 12],      // 中指
+    [13, 14, 15, 16],     // 無名指
+    [17, 18, 19, 20]      // 小指
   ];
 
-  for (let group of groups) {
+  for (let group of fingerGroups) {
     for (let i = 0; i < group.length - 1; i++) {
-      let p1 = hand.keypoints[group[i]];
-      let p2 = hand.keypoints[group[i + 1]];
-      line(p1.x, p1.y, p2.x, p2.y);
+      const kp1 = hand.keypoints[group[i]];
+      const kp2 = hand.keypoints[group[i + 1]];
+      if (kp1 && kp2) {
+        line(kp1.x, kp1.y, kp2.x, kp2.y);
+      }
     }
   }
 }
@@ -52,26 +55,10 @@ function draw() {
   background(220);
   image(video, 0, 0);
 
-  // Ensure at least one hand is detected
-  if (hands.length > 0) {
+  // hands 需由手部偵測模型取得
+  if (typeof hands !== 'undefined') {
     for (let hand of hands) {
-      if (hand.confidence > 0.1) {
-        // Loop through keypoints and draw circles
-        for (let i = 0; i < hand.keypoints.length; i++) {
-          let keypoint = hand.keypoints[i];
-
-          // Color-code based on left or right hand
-          if (hand.handedness == "Left") {
-            fill(255, 0, 255);
-          } else {
-            fill(255, 255, 0);
-          }
-
-          noStroke();
-          circle(keypoint.x, keypoint.y, 16);
-        }
-        drawHandLines(hand);
-      }
+      drawHandLines(hand);
     }
   }
 }
