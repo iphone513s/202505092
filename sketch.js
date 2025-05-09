@@ -62,3 +62,9 @@ function draw() {
     }
   }
 }
+
+/* 
+  The following code block was removed because it was Python code 
+  and not valid in a JavaScript (p5.js/ml5.js) environment.
+  Please implement any additional logic using JavaScript only.
+*/
