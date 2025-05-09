@@ -34,7 +34,6 @@ function setup() {
 // hand.keypoints 是一個長度為 21 的陣列，每個元素有 x, y 屬性
 
 function drawHandLines(hand) {
-  // 每根手指的 keypoints 編號
   const fingerGroups = [
     [0, 1, 2, 3, 4],      // 大拇指
     [5, 6, 7, 8],         // 食指
@@ -48,7 +47,7 @@ function drawHandLines(hand) {
       const kp1 = hand.keypoints[group[i]];
       const kp2 = hand.keypoints[group[i + 1]];
       if (kp1 && kp2) {
-        line(kp1.x, kp1.y, kp2.x, kp2.y);
+        line(kp1.position.x, kp1.position.y, kp2.position.x, kp2.position.y);
       }
     }
   }
@@ -68,15 +67,14 @@ function draw() {
   strokeWeight(4);
   ellipse(circleCenter[0], circleCenter[1], circleRadius * 2);
 
-  // hands 需由手部偵測模型取得
   if (typeof hands !== 'undefined') {
     let fingerPoints = [];
     for (let hand of hands) {
       drawHandLines(hand);
       // 取得食指指尖座標 (keypoint 8)
       const kp = hand.keypoints[8];
-      if (kp) {
-        fingerPoints.push([kp.x, kp.y]);
+      if (kp && kp.position) {
+        fingerPoints.push([kp.position.x, kp.position.y]);
       }
     }
 
