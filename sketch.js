@@ -4,6 +4,9 @@
 let video;
 let handPose;
 let hands = [];
+let circleRadius = 50;
+let circleCenter = [320, 240];
+let dragging = false;
 
 function preload() {
   // Initialize HandPose model with flipped video input
@@ -51,20 +54,40 @@ function drawHandLines(hand) {
   }
 }
 
+function isPointInCircle(point, center, radius) {
+  return dist(point[0], point[1], center[0], center[1]) < radius;
+}
+
 function draw() {
   background(220);
   image(video, 0, 0);
 
   // hands 需由手部偵測模型取得
   if (typeof hands !== 'undefined') {
+    let fingerPoints = [];
     for (let hand of hands) {
       drawHandLines(hand);
+      // 取得食指指尖座標 (keypoint 8)
+      const kp = hand.keypoints[8];
+      if (kp) {
+        fingerPoints.push([kp.x, kp.y]);
+      }
+    }
+
+    // 判斷是否有兩隻手的食指都在圓內
+    if (fingerPoints.length == 2) {
+      if (isPointInCircle(fingerPoints[0], circleCenter, circleRadius) &&
+          isPointInCircle(fingerPoints[1], circleCenter, circleRadius)) {
+        // 移動圓心到兩食指的中點
+        circleCenter = [
+          (fingerPoints[0][0] + fingerPoints[1][0]) / 2,
+          (fingerPoints[0][1] + fingerPoints[1][1]) / 2
+        ];
+      }
     }
   }
-}
 
-/* 
-  The following code block was removed because it was Python code 
-  and not valid in a JavaScript (p5.js/ml5.js) environment.
-  Please implement any additional logic using JavaScript only.
-*/
+  // 畫圓
+  fill(0, 255, 0);
+  ellipse(circleCenter[0], circleCenter[1], circleRadius * 2);
+}
